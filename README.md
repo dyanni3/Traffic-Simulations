@@ -7,3 +7,5 @@ Traffic collaboration between Skanda Vivek, David Yanni, Jesse Silverberg, and P
 Works!
 
 Now testing whether latex works: $\int_0^{\infty}{x^2dx}$
+
+Unfortunately, it doesn't seem to :(
