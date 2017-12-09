@@ -1,3 +1,5 @@
+""" Imports. matplotlib and cv2 for visualization, numpy and random for the engine, scipy for analysis"""
+
 import numpy as np
 from matplotlib import pyplot as plt
 import cv2
@@ -9,11 +11,46 @@ from scipy.optimize import curve_fit
 import matplotlib.pylab as pylab
 L=1000
 
+#define function for periodic boundary conditions
 def pb(x0,L):
 	return((x0+L)%L)
 
 
+#Define the ant class
 class ant():
+    """Ant class defines how individual cars will behave. There are several attributes and methods:
+        
+        attributes:
+            x = position on road of length L (initialized to a random number)
+            y = which lane (e.g. for three lane simulation y = 0, 1, or 2)
+            xunp = total distance traveled (useful for generating space-time plots)
+            v = current velocity of the car (initialized to a small random value)
+            v_pref = preferred velocity of a car (on average this will be 29 m/s or ~65 mph)
+            R = distance corresponding to "two second rule". At separations less than R, cars don't feel each other
+            r = size of a car
+            ids = an i.d. number for the car
+            stopped = a boolean to determine whether the car is "broken down" or behaving normally
+            idm = an option to model the car's behavior using the Intelligent Driver Model (see wikipedia)
+            idmT, idmA, idmB, idmDelta = parameters for the intelligent driver model
+            flowc = a parameter that can set cars to 'stopped'
+            dt = the size of a simulation time-step
+            
+        methods:
+            step(d, vbar, counter, delV):
+                this method evolves the car by one time-step. updates vbar, xunp, and x.
+                Inputs are...
+                d = distance to next car
+                delV = speed difference between this car and car in front of it
+                counter = just a counter to keep track of how many timesteps have elapsed
+                vbar = the average velocity of all cars in the simulation. During this car's
+                    update, the average velocity of all cars will be updated
+            force(x, delV):
+                this method computes the current force on the car, passes output to step()
+                Inputs are...
+                x = distance to next car
+                delV = speed difference w/r/t next car
+                
+    """
     
     def __init__(self,ids,y=0,flowc=0,stoppedc=0,cari=0,idm=False):
         self.x=np.random.uniform(0,L)
