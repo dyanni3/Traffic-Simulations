@@ -20,7 +20,7 @@ class ant():
         self.y=y
         self.xunp=self.x
         self.v=np.random.uniform(0,1)
-        self.dt=.01
+        self.dt=.05
         self.tau=.1
         self.v_pref=29#+min(np.random.normal(0,6.7),6.7)
         self.R=29*2
@@ -164,10 +164,15 @@ class ants():
     def change_lanesQ(self,current_lane,new_lane,bug,i):
         nf_index=self.find_neighbor(bug,new_lane) 
         x_b=pb(bug.x,self.L)
+        v_b=bug.v
         x_nl=pb(self.members[new_lane][pb(nf_index+1,len(self.members[new_lane]))].x,self.L)
+        v_nl=self.members[new_lane][pb(nf_index+1,len(self.members[new_lane]))].v
         x_nf=pb(self.members[new_lane][nf_index].x,self.L)
+        v_nf=self.members[new_lane][nf_index].v
         x_ol=pb(self.members[current_lane][pb(i+1,len(self.members[current_lane]))].x,self.L)
+        v_ol=self.members[current_lane][pb(i+1,len(self.members[current_lane]))].v
         x_of=pb(self.members[current_lane][pb(i-1,len(self.members[current_lane]))].x,self.L)
+        v_of=self.members[current_lane][pb(i-1,len(self.members[current_lane]))].v
 
         #2) get relevant dx values
         #    a) get the current values
@@ -179,14 +184,23 @@ class ants():
         dx_nfp=min(abs(x_b-x_nf),self.L-abs(x_b-x_nf))
         dx_ofp=min(abs(x_ol-x_of),self.L-abs(x_ol-x_of))
         
-        #3) get relevant forces
-        f_current=[bug.force(dx_b)]
-        f_current.append(self.members[current_lane][pb(i-1,len(self.members[current_lane]))].force(dx_of))
-        f_current.append(self.members[new_lane][nf_index].force(dx_nf))
+        #get relevant delv values
+        dv_nf=v_nl-v_nf
+        dv_b=v_ol-v_b
+        dv_of=v_b-v_of
         
-        f_new=[bug.force(dx_bp)]
-        f_new.append(self.members[new_lane][nf_index].force(dx_nfp))
-        f_new.append(self.members[current_lane][pb(i-1,len(self.members[current_lane]))].force(dx_ofp))
+        dv_bp=v_nl-v_b
+        dv_nfp=v_b-v_nf
+        dv_ofp=v_ol-v_of
+        
+        #3) get relevant forces
+        f_current=[bug.force(dx_b,dv_b)]
+        f_current.append(self.members[current_lane][pb(i-1,len(self.members[current_lane]))].force(dx_of,dv_of))
+        f_current.append(self.members[new_lane][nf_index].force(dx_nf,dv_nf))
+        
+        f_new=[bug.force(dx_bp,dv_bp)]
+        f_new.append(self.members[new_lane][nf_index].force(dx_nfp,dv_nfp))
+        f_new.append(self.members[current_lane][pb(i-1,len(self.members[current_lane]))].force(dx_ofp,dv_ofp))
         if ((f_current[0]+self.p*(f_current[1]+f_current[2])>1*(f_new[0]+self.p*(f_new[1]+f_new[2]))) and \
             (bug.stopped==0)):
             return(True)
