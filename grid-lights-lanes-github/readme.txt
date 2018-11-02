@@ -1,5 +1,7 @@
 #Simulating dynamics on a 5x5 Manhattan-like grid using the SUMO package.
 
+#routemanip file is to manipulate xml files and add stopped vehicles randomly, as well as analyze the subsequent output (aggregated.xml)
+
 
 1)Generate grid net file:
 	netgenerate --grid --grid.number=3 --grid.length=200 --output-file=grid.net.xml
