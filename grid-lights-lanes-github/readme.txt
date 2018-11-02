@@ -1,3 +1,6 @@
+#Simulating dynamics on a 5x5 Manhattan-like grid using the SUMO package.
+
+
 1)Generate grid net file:
 	netgenerate --grid --grid.number=3 --grid.length=200 --output-file=grid.net.xml
 	then go to netedit, make all intersections as traffic lights, add TLS
